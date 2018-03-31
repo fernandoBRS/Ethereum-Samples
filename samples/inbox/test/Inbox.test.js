@@ -37,16 +37,14 @@ describe('Inbox contract', () => {
         // When we want to retrieve a value without modifying it, we have to call a method.
         // methods is an object that contains all public functions that exist in a contract.
 
-        // call is used to customize the transaction that will be sent to the network.
-        // For example, if you want to send a transaction we need to send an object as parameter
-        // that will have info about who is sending the transaction and the amount of gas to be used.
+        // call is used anytime we want to read data without modifying it.
         const message = await inbox.methods.message().call();
         assert.equal(message, INITIAL_MESSAGE);
     });
 
     it('can change the message', async () => {
         // At this time we're trying to modify a contract's data.
-        // Everytime we want to modify data, we have to send a new transaction.
+        // Every time we want to modify data, we have to send a new transaction.
         await inbox.methods.setMessage('Hello new world!').send({ from: accounts[0] });
 
         const message = await inbox.methods.message().call();
