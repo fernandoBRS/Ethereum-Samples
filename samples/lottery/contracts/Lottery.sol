@@ -23,11 +23,31 @@ contract Lottery {
 
     // Generates a random number
     // view means that we're not modifying any state or any data in the contract
-    function random() private view returns (uint) {
+    function getRandom() private view returns (uint) {
         // keccak256 represents the SHA-3 algorithm
         // difficulty is a number that indicates how challenging is to solve the current block
         // now is the current time
         // uint will convert hash number tom uint
         return uint(keccak256(block.difficulty, now, players));
+    }
+
+    function pickWinner() public {
+        // Making sure that no one, except the owner, can pick the winner
+        require(msg.sender == owner);
+
+        uint winnerIndex = getRandom() % players.length;
+
+        // "this" is the pointer to the current contract instance
+        // address(this) converts the contract reference to an address
+        // address(this).balance is the total amount of money available in the contract
+        uint balance = address(this).balance;
+
+        // transfer will take some amount of money in the contract and send it to the specified address
+        players[winnerIndex].transfer(balance);
+
+        // Empty the players list to start a new lottery without the need to redeploy the contract
+        // address[](0) means a dynamic array with initial size of 0.
+        // If you start it like address[](2), the array will start as [0x0000.., 0x0000..]
+        players = new address[](0);
     }
 }
