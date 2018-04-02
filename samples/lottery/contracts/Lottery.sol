@@ -31,10 +31,8 @@ contract Lottery {
         return uint(keccak256(block.difficulty, now, players));
     }
 
-    function pickWinner() public {
-        // Making sure that no one, except the owner, can pick the winner
-        require(msg.sender == owner);
-
+    // Picks the lottery winner, where only the contract owner can call it
+    function pickWinner() public restrictedToOwner {
         uint winnerIndex = getRandom() % players.length;
 
         // "this" is the pointer to the current contract instance
@@ -49,5 +47,19 @@ contract Lottery {
         // address[](0) means a dynamic array with initial size of 0.
         // If you start it like address[](2), the array will start as [0x0000.., 0x0000..]
         players = new address[](0);
+    }
+
+    // Returns the list of players in the lottery
+    function getPlayers() public view returns(address[]) {
+        return players;
+    }
+
+    // Function modifiers enables you to reuse validations
+    modifier restrictedToOwner() {
+        // Making sure that no one, except the owner, can pick the winner
+        require(msg.sender == owner);
+
+        // When a function calls it, the "_;" will be replaced by the code inside the function
+        _;
     }
 }
